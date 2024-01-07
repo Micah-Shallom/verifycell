@@ -10,7 +10,7 @@ class DatabaseConfig(BaseModel):
     pg_dsn: PostgresDsn
 
 # Construct the PostgreSQL connection string
-database_url = DatabaseConfig(pg_dsn=config.SQLALCHEMY_DATABASE_URI).pg_dsn
+# database_url = DatabaseConfig(pg_dsn=config.SQLALCHEMY_DATABASE_URI).pg_dsn
 
 database_url = config.SQLALCHEMY_DATABASE_URI
 

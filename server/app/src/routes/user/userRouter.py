@@ -14,7 +14,7 @@ router = APIRouter(
     responses={404: {"description":"Not found"}}
 )
 
-@router.get("/get")
+@router.get("/greet", summary="Greet user")
 async def root():
     return {"message": "Hello World"}
 
@@ -31,17 +31,22 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
             detail="Please add Email"
         )
 
-    user = get_user_by_email(db, user.email)
+    userE = get_user_by_email(user.email, db)
 
-    if user:
+    if userE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"User with email {user.email} already exists"
         )
 
-    new_user = User(**user.dict())
-    new_user.save(commit=True)
-    print(user)
+    new_user = User(
+        fullname=user.fullname,
+        username=user.username,
+        email=user.email,
+        password=user.password,
+        phone_number=user.phone_number
+    )
+    new_user.save(db, commit=True)
     return user
 
 @router.post("/login", response_model=GetUser, summary="Login user")

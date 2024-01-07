@@ -2,18 +2,19 @@ from sqlalchemy import Column, String, DateTime
 from datetime import datetime, timezone
 from app.src.utils.uuid import generate_uuid as uuid
 from sqlalchemy.orm import Session
+from app.src.config.database import Base
 
 
-class BaseInfoModel:
+class BaseInfoModel():
 
     """
         This class defines all common attributes/methods
         for other class that would inherit it.
     """
     
-    id = Column(String(200), unique=True, nullable=False, primary_key=True, default=uuid())
-    created_at = Column(DateTime(timezone=True), nullable=False, default=(datetime.now(timezone.utc)))
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=(datetime.now(timezone.utc)))
+    id = Column(String(200), unique=True, nullable=False, primary_key=True, default=lambda: uuid())
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: (datetime.now(timezone.utc)))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: (datetime.now(timezone.utc)))
 
     def __init__(self, *args, **kwargs):
         """
@@ -64,10 +65,10 @@ class BaseInfoModel:
         return base_dict
     
     def before_save(self, db: Session, *args, **kwargs):
-        db.refresh()
+        db.refresh(self)
 
     def after_save(self, db:Session, *args, **kwargs):
-        db.refresh()
+        db.refresh(self)
 
     def save(self,db: Session, commit=True):
         """
@@ -77,7 +78,7 @@ class BaseInfoModel:
             Return:
                 None
         """
-        self.before_save()
+        self.before_save(db)
 
         db.add(self)
         if commit:
@@ -88,26 +89,26 @@ class BaseInfoModel:
                 db.rollback()
                 raise e
             
-        self.after_save()
+        self.after_save(db)
 
     def before_update(self,db: Session, *args, **kwargs):
-        db.refresh()
+        db.refresh(self)
 
     def after_update(self,db: Session, *args, **kwargs):
-        db.refresh()
+        db.refresh(self)
 
     def update(self,db: Session, *args, **kwargs):
-        self.before_update(*args, **kwargs)
+        self.before_update(db,*args, **kwargs)
 
         db.commit()
 
-        self.after_update(*args, **kwargs)
+        self.after_update(db, *args, **kwargs)
 
     def delete(self,db: Session, commit=True):
-        self.before_update()
+        self.before_update(db)
 
         db.delete(self)
         if commit:
             db.commit()
 
-        self.after_update()
+        self.after_update(db)
