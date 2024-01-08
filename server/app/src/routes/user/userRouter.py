@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.src.schemas.userSchema import UserCreate
 from .controller import get_user_by_email
 from app.src.utils.db_dependency import get_session
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, object_session
 from app.src.schemas.userSchema import UserCreate, GetUser, LoginUser
 from app.src.models.userModel import User
 from app.src.utils.jwtUtils import create_access_token, create_refresh_token
@@ -46,6 +46,9 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
         password=user.password,
         phone_number=user.phone_number
     )
+
+    
+
     new_user.save(db, commit=True)
     return user
 

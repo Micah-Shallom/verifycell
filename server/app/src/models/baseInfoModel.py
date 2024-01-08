@@ -65,7 +65,7 @@ class BaseInfoModel():
         return base_dict
     
     def before_save(self, db: Session, *args, **kwargs):
-        db.refresh(self)
+        pass
 
     def after_save(self, db:Session, *args, **kwargs):
         db.refresh(self)
@@ -92,7 +92,7 @@ class BaseInfoModel():
         self.after_save(db)
 
     def before_update(self,db: Session, *args, **kwargs):
-        db.refresh(self)
+        pass
 
     def after_update(self,db: Session, *args, **kwargs):
         db.refresh(self)
