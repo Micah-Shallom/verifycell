@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.src.routes import auth
+from app.src.config.config import Config
 
+
+config = Config()
 app = FastAPI()
 
 # CORS middleware to allow cross-origin requests (if needed)
@@ -14,7 +17,7 @@ app.add_middleware(
 )
 
 # Include route definitions
-app.include_router(auth.router)  # Include authentication routes
+# app.include_router(auth.router)  # Include authentication routes
 # Include other route definitions as needed
 
 # Startup event handlers, if any
@@ -22,6 +25,11 @@ app.include_router(auth.router)  # Include authentication routes
 async def startup_event():
     # Any startup tasks such as connecting to the database can go here
     pass
+
+
+@app.get("/")
+def main_function():
+    return "Hello World"
 
 # Shutdown event handlers, if any
 @app.on_event("shutdown")
