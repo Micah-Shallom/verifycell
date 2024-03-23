@@ -2,9 +2,8 @@ from config.config import Base
 from sqlalchemy import Column, String, DateTime
 from datetime import datetime, timezone
 from app.src.utils import generate_uuid as uuid
-from app.src.config.database import SessionLocal
+from sqlalchemy.orm import Session
 
-db = SessionLocal()
 
 class BaseInfoModel(Base):
 
@@ -65,13 +64,13 @@ class BaseInfoModel(Base):
 
         return base_dict
     
-    def before_save(self,*args, **kwargs):
-        pass
+    def before_save(self, db: Session, *args, **kwargs):
+        db.refresh()
 
-    def after_save(self, *args, **kwargs):
-        pass
+    def after_save(self, db:Session, *args, **kwargs):
+        db.refresh()
 
-    def save(self, commit=True):
+    def save(self,db: Session, commit=True):
         """
             This instance saves the current attributes in the class
             and updates the updated_at attribute
@@ -80,6 +79,7 @@ class BaseInfoModel(Base):
                 None
         """
         self.before_save()
+
         db.add(self)
         if commit:
             try:
@@ -88,20 +88,27 @@ class BaseInfoModel(Base):
             except Exception as e:
                 db.rollback()
                 raise e
+            
         self.after_save()
 
-    def before_update(self, *args, **kwargs):
-        pass
+    def before_update(self,db: Session, *args, **kwargs):
+        db.refresh()
 
-    def after_update(self, *args, **kwargs):
-        pass
+    def after_update(self,db: Session, *args, **kwargs):
+        db.refresh()
 
-    def update(self, *args, **kwargs):
+    def update(self,db: Session, *args, **kwargs):
         self.before_update(*args, **kwargs)
+
         db.commit()
+
         self.after_update(*args, **kwargs)
 
-    def delete(self, commit=True):
+    def delete(self,db: Session, commit=True):
+        self.before_update()
+
         db.delete(self)
         if commit:
             db.commit()
+
+        self.after_update()
