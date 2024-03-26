@@ -13,6 +13,7 @@ const SignUp = () => {
     const paperStyle = { padding: 20,height:'95vh', width: 300, margin: "0 auto" }
     const headerStyle = {margin:0}
     const marginBottom = {marginBottom: 0}
+    const avatarStyle={backgroundColor: "#00897B"}
     const initialValues = {
         name: '',
         email: '',
@@ -41,7 +42,7 @@ const SignUp = () => {
         <Grid>
             <Paper elevation={10} style={paperStyle}>
                 <Grid align="center">
-                    <Avatar>
+                    <Avatar style={avatarStyle}>
                         <AddCircleOutlineIcon></AddCircleOutlineIcon>
                     </Avatar>
                     <h2 style={headerStyle}>Sign Up</h2>
@@ -69,7 +70,7 @@ const SignUp = () => {
                                 <Field as={TextField} fullWidth label="Phone" name="phoneNumber" style={marginBottom} placeholder="Enter PhoneNumber" helperText={<ErrorMessage name="phoneNumber" />} />
                                 <Field as={TextField} fullWidth label="Password" type="number" style={marginBottom} name="password" placeholder="Enter Password" helperText={<ErrorMessage name="password" />} />
                                 <Field as={TextField} fullWidth label="Confirm Password" style={marginBottom} name="confirmPassword" helperText={<ErrorMessage name="confirmPassword" />} />
-                                <Button type="submit" fullWidth color="primary" variant="contained" disabled={props.isSubmitting}>{props.isSubmitting ? "Loading" : "Sign Up"}</Button>
+                                <Button type="submit" fullWidth sx={{ backgroundColor: '#004D40', color: 'white' }}  variant="contained" disabled={props.isSubmitting}>{props.isSubmitting ? "Loading" : "Sign Up"}</Button>
                             </Form>
                         )
                     }

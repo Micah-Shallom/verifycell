@@ -13,7 +13,7 @@ import * as Yup from 'yup'
 const Login = ({handleChange}) => {
 
     const paperStyle={padding :20,height:'95vh',width:300, margin:"0 auto"}
-    const avatarStyle={backgroundColor: "primary"}
+    const avatarStyle={backgroundColor: "#00897B"}
     const bottomMargin = {margin: "8px 0"}
     const initialValues = {
         username: "",
@@ -52,7 +52,7 @@ const Login = ({handleChange}) => {
                             <Field as={FormControlLabel} required 
                             control={<Checkbox name="remember" color='primary' />} 
                             label="Remember Me" />
-                            <Button type="submit" fullWidth variant="contained" style={bottomMargin} disabled={props.isSubmitting}>{props.isSubmitting ? "Loading" : "Sign In"}</Button>
+                            <Button type="submit" fullWidth variant="contained" sx={{ backgroundColor: '#004D40', color: 'white' }} style={bottomMargin} disabled={props.isSubmitting}>{props.isSubmitting ? "Loading" : "Sign In"}</Button>
                         </Form>
                     )   
                 }

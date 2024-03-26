@@ -12,7 +12,7 @@ const SignInOutTabs = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const paperStyle={width:340,margin:"20px auto"}
+  const paperStyle={width:340,margin:"20px auto", backgroundColor:"#004D40", color:"white"}
 
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -38,9 +38,9 @@ const SignInOutTabs = () => {
     <Paper elevation={20} style={paperStyle}>
         <Tabs
           value={value}
-          indicatorColor="primary"
-          textColor="primary"
-          style={{alignContent:"center"}}
+          indicatorColor="white"
+          textColor="white"
+          style={{display:"flex", justifyContent:"space-between"}}
           onChange={handleChange}
           aria-label="disabled tabs example">
             <Tab label="Sign In" />
