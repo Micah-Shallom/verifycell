@@ -7,7 +7,7 @@ from src.utils.jwtUtils import create_access_token, create_refresh_token
 
 from src.schemas import userSchema
 
-from src.models.userModel import User, TokenTable
+from src.models.userModel import User
 from .controller import get_user_by_email
 
 
@@ -61,10 +61,10 @@ def login_user(request: userSchema.LoginUser, session: Session = Depends(get_ses
 
     #add tokens to TokenTable
 
-    token_entry = TokenTable(id=user.id, access_token=access_token, refresh_token=refresh_token, status=True)
+    # token_entry = TokenTable(id=user.id, access_token=access_token, refresh_token=refresh_token, status=True)
 
-    #save into token_table
-    token_entry.save(db=session, commit=True)
+    # #save into token_table
+    # token_entry.save(db=session, commit=True)
 
     return {
         "message":"Logged in successfully",
@@ -73,6 +73,8 @@ def login_user(request: userSchema.LoginUser, session: Session = Depends(get_ses
             "refresh_token": refresh_token
         } 
     }
+
+
 # Any valid JWT access token can access this endpoint
 @router.get("/protected")
 def get_logged_in_user(Authorize:AuthJWT=Depends()):

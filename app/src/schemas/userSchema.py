@@ -1,25 +1,24 @@
 from pydantic import BaseModel, EmailStr
-
+from app.src.config.database import Base
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = "secret"
+    authjwt_secret_key:str="secret"
 
 class UserCreate(BaseModel):
-    # id: int | None = None
-    first_name: str
-    last_name: str
-    username: str
-    email: EmailStr
-    password: str
+    id: int | None = None
+    fullname:str
+    username:str
+    email:EmailStr
+    password:str
 
     class Config:
-        orm_mode = True
+        orm_mode=True
 
 
 class LoginUser(BaseModel):
-    username: str
-    email: str
-    password: str
+    username:str
+    email:EmailStr
+    password:str
 
     class Config:
-        orm_mode = True
+        orm_mode=True

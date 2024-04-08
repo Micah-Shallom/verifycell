@@ -7,7 +7,7 @@ load_dotenv()
 class Config:
     """Base Config Object"""
 
-    # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres:Chamo.Pzo@localhost:5432/plugDB')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres:Chamo.Pzo@localhost:5432/verifyme')
 
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_REFRESH_SECRET_KEY = os.getenv("JWT_REFRESH_SECRET_KEY")

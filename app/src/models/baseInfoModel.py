@@ -1,11 +1,10 @@
-from config.config import Base
 from sqlalchemy import Column, String, DateTime
 from datetime import datetime, timezone
-from app.src.utils import generate_uuid as uuid
+from app.src.utils.uuid import generate_uuid as uuid
 from sqlalchemy.orm import Session
 
 
-class BaseInfoModel(Base):
+class BaseInfoModel:
 
     """
         This class defines all common attributes/methods

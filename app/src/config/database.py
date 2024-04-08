@@ -6,7 +6,7 @@ from .config import Config
 
 config = Config()
 
-connectionString = f'postgresql://{config.db_username}:{config.db_password}@{config.db_url}/{config.db_name}'
+connectionString = f'postgresql+psycopg2://{config.db_username}:{config.db_password}@{config.db_url}/{config.db_name}'
 
 # use echo=True for debugging
 engine = create_engine(connectionString, echo=True)

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.models.userModel import User
 
 
-def get_user_by_email(session: Session, email: EmailStr) -> User:
+def get_user_by_email(session: Session, email:EmailStr) -> User:
     user = session.query(User).filter_by(email=email).first()
 
     if not user:
