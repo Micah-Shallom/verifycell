@@ -13,8 +13,9 @@ class Config(BaseSettings):
 
 
     SQLALCHEMY_DATABASE_URI: str = None 
+    SENDCHAMP_API_KEY: str = None
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # 30 minutes
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 12 * 1 # 12 hours
     ALGORITHM: str = "HS256"
     JWT_SECRET_KEY: str    # should be kept secret
     JWT_REFRESH_SECRET_KEY: str     # should be kept secret

@@ -14,14 +14,14 @@ class User(Base, BaseInfoModel):
     lastname = Column(String, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    password = Column(String(128))
+    password = Column(String(450))
     phone_number = Column(String)
 
     def set_password(self, password:str):
         self.password = generate_password_hash(password)
 
     def check_password(self, password:str):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
     
     @classmethod
     def get_user_by_username(cls, session: Session, username:str):

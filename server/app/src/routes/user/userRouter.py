@@ -1,11 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status,Request
 from app.src.schemas.userSchema import UserCreate
 from .controller import get_user_by_email, get_user_by_username
 from app.src.utils.db_dependency import get_session
-from sqlalchemy.orm import Session, object_session
+from sqlalchemy.orm import Session
 from app.src.schemas.userSchema import UserCreate, GetUser, LoginUser, GetLogin
 from app.src.models.userModel import User
 from app.src.utils.jwtUtils import create_access_token, create_refresh_token
+from app.src.schemas.tokenSchema import Token, RefreshToken, TokenData
+from app.src.utils.jwtUtils import verify_refresh_token
+from app.src.utils.verification import send_otp, verify_otp
+from app.src.config import config
+from app.src.utils.exception import handle_status_code
+from app import logger
 
 
 router = APIRouter(
@@ -24,7 +30,10 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
     #querying database to check if user already exists
     #if user exists, return error message
     #if user does not exist, create new user
-
+    """
+        Create a new user
+        User registration endpoint
+    """
     if not user.email:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -48,7 +57,36 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"User with username {user.username} already exists"
         )
+    
+    """
+        perform phone number verification
+        send otp and verify otp
+    """
 
+    #send otp to the user
+    # print("Sending OTP to user...")
+    logger.info(f"Sending OTP to user {user.phone_number}")
+
+    otp_response = send_otp(
+        phone_number=user.phone_number,
+        token_length=6,
+        expiration_time=10, #10mins
+        api_key=f"{config.SENDCHAMP_API_KEY}"
+    )
+
+    logger.info(f"OTP response: {otp_response}")
+    
+    # if otp_response.status_code != 200:
+    # Use the function
+    status_code = otp_response.status_code
+    message = handle_status_code(status_code)
+    logger.info(f"Response status code: {status_code}, message: {message}")
+    
+
+    
+
+
+    #create new user entry in the database
     new_user = User(
         firstname=user.firstname,
         lastname=user.lastname,
@@ -57,6 +95,8 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
         password=user.password,
         phone_number=user.phone_number
     )
+
+    new_user.set_password(user.password)
 
     new_user.save(db, commit=True)
     return user
@@ -67,12 +107,20 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
 async def login_user(user: LoginUser, db: Session = Depends(get_session)):
     """
         Login user based on email and password
+        User login endpoint
     """
-    user = get_user_by_email(user.email, db)
+    userP = get_user_by_email(user.email, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with email {user.email} not found"
+        )
+    
+    # perform password check
+    if not userP.check_password(user.password):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid password"
         )
     
     access_token = create_access_token(user.email)
@@ -82,9 +130,33 @@ async def login_user(user: LoginUser, db: Session = Depends(get_session)):
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
-        "user_id": user.id
+        "user_id": userP.id
     }
 
+@router.post("/refresh", response_model=Token, summary="Refresh token")
+async def refresh_token(refresh_token: RefreshToken,  db: Session = Depends(get_session)):
+    """
+        Refresh token endpoint
+    """
+    user = verify_refresh_token(refresh_token.refresh_token, db)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token"
+        )
+    access_token = create_access_token(user.email)
+    email_token = TokenData(email=user.email)
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": email_token
+    }
 
 #look into passwordbearer authentication
+
+# a simple endpoint that returns the request headers
+@router.get("/test-auth")
+async def test_auth(request: Request):
+    headers = request.headers
+    return {"headers": headers}
 
