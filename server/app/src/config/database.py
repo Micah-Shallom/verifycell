@@ -2,23 +2,23 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import Config
-from pydantic import (
-    PostgresDsn
-)
-
+from pydantic import PostgresDsn, BaseModel
 
 config = Config()
 
-database_url = PostgresDsn.build(
-    scheme="postgresql",
-    user=config.db_username,
-    password=config.db_password,
-    host=config.db_url,
-    path=f"/{config.db_name}",
-)
+class DatabaseConfig(BaseModel):
+    pg_dsn: PostgresDsn
 
-# use echo=True for debugging
+# Construct the PostgreSQL connection string
+database_url = DatabaseConfig(pg_dsn=config.SQLALCHEMY_DATABASE_URI).pg_dsn
+
+database_url = config.SQLALCHEMY_DATABASE_URI
+
+# Create the SQLAlchemy engine
 engine = create_engine(database_url, echo=True)
+
+# Define the session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Declare the base class for your models
 Base = declarative_base()

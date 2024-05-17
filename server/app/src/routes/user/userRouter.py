@@ -4,7 +4,7 @@ from .controller import get_user_by_email
 from app.src.utils.db_dependency import get_session
 from sqlalchemy.orm import Session
 from app.src.schemas.userSchema import UserCreate, GetUser, LoginUser
-from app.src.models import User
+from app.src.models.userModel import User
 from app.src.utils.jwtUtils import create_access_token, create_refresh_token
 
 

@@ -3,11 +3,11 @@ from jose import jwt, JWTError
 from fastapi import HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime, timedelta
-from src.config import config
-from app.src.models.tokenModel import TokenTable
+from app.src.config import config
+from app.src.models.userModel import TokenTable
 from sqlalchemy.orm import Session
 from app.src.config import config
-from jose import InvalidTokenError
+from app.src.utils.exception import InvalidTokenError
 
 def create_access_token(subject: Union[str, Any], expires_delta:int = None) -> str:
     if expires_delta is not None:
@@ -35,8 +35,8 @@ def decodeJWT(jwtoken: str):
         config = config.Config()
         payload = jwt.decode(jwtoken, config.secret_key, config.algorithm)
         return payload
-    except InvalidTokenError:
-        return None
+    except InvalidTokenError as e:
+        raise f"Invalid token: {e.message}"
 
 
 class JWTBearer(HTTPBearer):

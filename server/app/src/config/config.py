@@ -1,23 +1,31 @@
-from pydantic_settings import BaseSettings
-from pydantic import ValidationError, BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import ValidationError
+from dotenv import load_dotenv
+from typing import Optional
+from pydantic import PostgresDsn
+from pathlib import Path
 
-class Config(BaseSettings, BaseModel):
+load_dotenv()
+
+class Config(BaseSettings):
     """Base Config Object"""
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
-    SQLALCHEMY_DATABASE_URI: str = 'postgresql://postgres:Chamo.Pzo@localhost:5432/verifyme'
+
+    SQLALCHEMY_DATABASE_URI: str = None 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # 30 minutes
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     ALGORITHM: str = "HS256"
-    JWT_SECRET_KEY: str   # should be kept secret
-    JWT_REFRESH_SECRET_KEY: str    # should be kept secret
-    DB_USER: str = None
-    DB_PASSWORD: str = None
-    DB_URL: str = None
-    DB_NAME: str = None
+    JWT_SECRET_KEY: str    # should be kept secret
+    JWT_REFRESH_SECRET_KEY: str     # should be kept secret
+    DB_USER: str 
+    DB_PASSWORD: str 
+    DB_URL: str
+    DB_NAME: str 
 
-    class Config:
-        env_file = ".env"
-
+    # class Config:
+    #     env_file = Path(Path(__file__).resolve().parent) / ".env"
+    #     print(f'environment created - {Path(Path(__file__).resolve().name)}')
 
 try :
     config = Config()
