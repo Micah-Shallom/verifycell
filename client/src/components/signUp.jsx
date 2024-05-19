@@ -1,84 +1,154 @@
-import { Avatar, Button, Grid, Paper, TextField, Typography } from "@mui/material"
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
+import * as React from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import { Formik, Field, Form, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
-import {FormHelperText} from "@mui/material";
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-const SignUp = () => {
-    const paperStyle = { padding: 20,height:'95vh', width: 300, margin: "0 auto" }
-    const headerStyle = {margin:0}
-    const marginBottom = {marginBottom: 0}
-    const avatarStyle={backgroundColor: "#00897B"}
-    const initialValues = {
-        name: '',
-        email: '',
-        gender: '',
-        phoneNumber: '',
-        password: '',
-        confirmPassword: '',
-    }
-    const validationSchema = Yup.object().shape({
-        name: Yup.string().min(3, "It's too short").required("Required"),
-        email: Yup.string().email("Enter valid email").required("Required"),
-        gender: Yup.string().oneOf(["male", "female", "other"], "Required").required("Required"),
-        phoneNumber: Yup.number().typeError("Enter valid Phone Number").required('Required'),
-        password: Yup.string().min(8, "Password minimum length should be 8").required("Required"),
-        confirmPassword: Yup.string().oneOf([Yup.ref('password')], "Password not matched").required("Required"),
-    })
-
-    const onSubmit = (values, props) => {
-        setTimeout(() => {
-            props.resetForm()
-            props.setSubmitting(false)
-        }, 2500)
-    }
-
-    return (
-        <Grid>
-            <Paper elevation={10} style={paperStyle}>
-                <Grid align="center">
-                    <Avatar style={avatarStyle}>
-                        <AddCircleOutlineIcon></AddCircleOutlineIcon>
-                    </Avatar>
-                    <h2 style={headerStyle}>Sign Up</h2>
-                    <Typography variant="caption" gutterBottom >Please fill this form to create an account</Typography>
-                </Grid>
-                <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-                    {
-                        (props) => (
-                            <Form>
-                                <Field as={TextField} fullWidth label="Name" name="name" style={marginBottom} placeholder="Enter your name" helperText={<ErrorMessage name="name" />} />
-                                <Field as={TextField} fullWidth label="Email" style={marginBottom} name="email" placeholder="Enter your Email" helperText={<ErrorMessage name="email" />}/>
-                                <FormControl style={marginBottom}>
-                                    <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-                                    <Field as={RadioGroup}
-                                        aria-labelledby="demo-radio-buttons-group-label"
-                                        defaultValue="female"
-                                        name="gender"
-                                        style={{display:"initial"}}>
-                                            <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                            <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                            <FormControlLabel value="other" control={<Radio />} label="Other" />
-                                    </Field>
-                                </FormControl>
-                                <FormHelperText><ErrorMessage name="gender"/></FormHelperText>
-                                <Field as={TextField} fullWidth label="Phone" name="phoneNumber" style={marginBottom} placeholder="Enter PhoneNumber" helperText={<ErrorMessage name="phoneNumber" />} />
-                                <Field as={TextField} fullWidth label="Password" type="number" style={marginBottom} name="password" placeholder="Enter Password" helperText={<ErrorMessage name="password" />} />
-                                <Field as={TextField} fullWidth label="Confirm Password" style={marginBottom} name="confirmPassword" helperText={<ErrorMessage name="confirmPassword" />} />
-                                <Button type="submit" fullWidth sx={{ backgroundColor: '#004D40', color: 'white' }}  variant="contained" disabled={props.isSubmitting}>{props.isSubmitting ? "Loading" : "Sign Up"}</Button>
-                            </Form>
-                        )
-                    }
-                </Formik>
-                
-            </Paper>
-        </Grid>
-    )
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="https://mui.com/">
+        Your Website
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
 }
 
-export default SignUp
+// TODO remove, this demo shouldn't need to reset the theme.
+
+const defaultTheme = createTheme();
+
+export default function SignUp() {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get('email'),
+      password: data.get('password'),
+    });
+  };
+
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign up
+          </Typography>
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  autoComplete="given-name"
+                  name="firstName"
+                  required
+                  fullWidth
+                  id="firstName"
+                  label="First Name"
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="lastName"
+                  label="Last Name"
+                  name="lastName"
+                  autoComplete="family-name"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="family-name"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="phone number"
+                  label="Phone Number"
+                  type="number"
+                  id="phone number"
+                  autoComplete="new-phone number"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  label="I want to receive inspiration, marketing promotions and updates via email."
+                />
+              </Grid>
+            </Grid>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link href="#" variant="body2">
+                  Already have an account? Sign in
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+        <Copyright sx={{ mt: 5 }} />
+      </Container>
+    </ThemeProvider>
+  );
+}
