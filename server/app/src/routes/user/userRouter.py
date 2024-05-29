@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.src.schemas.userSchema import UserCreate
-from .controller import get_user_by_email
+from .controller import get_user_by_email, get_user_by_username
 from app.src.utils.db_dependency import get_session
 from sqlalchemy.orm import Session, object_session
-from app.src.schemas.userSchema import UserCreate, GetUser, LoginUser
+from app.src.schemas.userSchema import UserCreate, GetUser, LoginUser, GetLogin
 from app.src.models.userModel import User
 from app.src.utils.jwtUtils import create_access_token, create_refresh_token
 
 
 router = APIRouter(
-    prefix="/users",
+    prefix="/api/users",
     tags=["Users"],
     responses={404: {"description":"Not found"}}
 )
@@ -32,32 +32,43 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session)):
         )
 
     userE = get_user_by_email(user.email, db)
+    username =  get_user_by_username(user.username, db)
 
-    if userE:
+    if userE != None:
+        print("User with email {user.email} already exists")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"User with email {user.email} already exists"
         )
 
+    
+    if username != None:
+        print("User with username {user.username} already exists")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"User with username {user.username} already exists"
+        )
+
     new_user = User(
-        fullname=user.fullname,
+        firstname=user.firstname,
+        lastname=user.lastname,
         username=user.username,
         email=user.email,
         password=user.password,
         phone_number=user.phone_number
     )
 
-    
-
     new_user.save(db, commit=True)
     return user
 
-@router.post("/login", response_model=GetUser, summary="Login user")
+
+
+@router.post("/login", response_model=GetLogin, summary="Login user")
 async def login_user(user: LoginUser, db: Session = Depends(get_session)):
     """
         Login user based on email and password
     """
-    user = get_user_by_email(db, user.email)
+    user = get_user_by_email(user.email, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

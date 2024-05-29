@@ -10,7 +10,8 @@ class User(Base, BaseInfoModel):
 
     __tablename__ = "users"
 
-    fullname = Column(String, index=True)
+    firstname = Column(String, index=True)
+    lastname = Column(String, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String(128))

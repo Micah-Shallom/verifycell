@@ -6,14 +6,15 @@ from datetime import datetime, timedelta
 from app.src.config import config
 from app.src.models.userModel import TokenTable
 from sqlalchemy.orm import Session
-from app.src.config import config
 from app.src.utils.exception import InvalidTokenError
+
+config = config.Config()
 
 def create_access_token(subject: Union[str, Any], expires_delta:int = None) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
-        expires_delta = datetime.utcnow() + timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRES)
+        expires_delta = datetime.utcnow() + timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
 
 
     to_encode = {"exp":expires_delta, "sub": str(subject)}
@@ -24,7 +25,7 @@ def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) ->
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
-        expires_delta = datetime.utcnow() + timedelta(minutes=config.JWT_REFRESH_TOKEN_EXPIRES)
+        expires_delta = datetime.utcnow() + timedelta(minutes=config.REFRESH_TOKEN_EXPIRE_MINUTES)
     
     to_encode = {"exp": expires_delta, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, config.JWT_REFRESH_SECRET_KEY, config.ALGORITHM)
@@ -33,7 +34,7 @@ def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) ->
 def decodeJWT(jwtoken: str):
     try:
         config = config.Config()
-        payload = jwt.decode(jwtoken, config.secret_key, config.algorithm)
+        payload = jwt.decode(jwtoken, config.JWT_SECRET_KEY, config.ALGORITHM)
         return payload
     except InvalidTokenError as e:
         raise f"Invalid token: {e.message}"

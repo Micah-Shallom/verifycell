@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.src.routes.user.userRouter import router as userRouter
-from app.src.config import config
+import logging
 
 
 app = FastAPI()
-config = config.Config()
+
+# Adjust SQLAlchemy logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine.Engine').setLevel(logging.WARNING)
 
 # CORS middleware to allow cross-origin requests (if needed)
 app.add_middleware(

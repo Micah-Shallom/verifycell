@@ -3,8 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import Config
 from pydantic import PostgresDsn, BaseModel
+from .config import config
 
-config = Config()
+# config = Config()
 
 class DatabaseConfig(BaseModel):
     pg_dsn: PostgresDsn
