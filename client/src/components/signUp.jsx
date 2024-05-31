@@ -14,7 +14,7 @@ import Copyright from './copyright';
 import axios from 'axios';
 import * as Yup from 'yup'
 import { Formik, Field, ErrorMessage, Form } from 'formik'
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import StatusDisplay from './statusDisplay';
 
 export default function SignUp() {
@@ -73,18 +73,28 @@ export default function SignUp() {
 		}
 	}
 
+
+  
+
 	setTimeout(() => {
 		if (status === "success"){
 			resetForm();
 		}
 	}, 2000)
 
-	setStatus(null);
-	setMessage(null);
 	resetForm();
 	
 };
 
+// useEffect(() => {
+//   //clear the message after 2 seconds
+//   if (status === "success"){
+//     setTimeout(() => {
+//       setMessage(null);
+//       setStatus(null);
+//     }, 2000);
+//   }
+// }, [status, resetForm]);
 
 
   
