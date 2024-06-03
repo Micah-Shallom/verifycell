@@ -7,8 +7,10 @@ import logging
 app = FastAPI()
 
 # Adjust SQLAlchemy logging
-logging.basicConfig()
+logging.basicConfig(level=logging.INFO)
 logging.getLogger('sqlalchemy.engine.Engine').setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
+
 
 # CORS middleware to allow cross-origin requests (if needed)
 app.add_middleware(
