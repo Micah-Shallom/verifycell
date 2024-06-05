@@ -12,31 +12,109 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { ThemeProvider } from '@mui/material/styles';
-import {defaultTheme} from '../theme';
+import { defaultTheme, themes, useThemeMode } from '../theme';
 import Copyright from './copyright';
-
-
-
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+import { setAccessToken } from '../tokenStorage';
+import { useStatusContext } from '../context';
+import StatusDisplay from './statusDisplay';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../axiosConfig';
+import { useEffect } from 'react';
+import { getAccessToken } from '../tokenStorage';
 
 export default function SignInSide() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+  const {message, setMessage, status, setStatus, isAuthenticated, setIsAuthenticated} = useStatusContext()
+  const navigate = useNavigate();
+  const {mode} = useThemeMode(localStorage.getItem('themeMode') || 'light');
+
+  useEffect(() => {
+    const token = getAccessToken();
+    console.log(token)
+    if (token){
+      setIsAuthenticated(true);
+    }
+  });
+
+  useEffect(() => {
+    if (isAuthenticated){
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]); 
+  
+
+
+  const emailRegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  const passwordRegExp = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+  const initialValues = {
+    email: '',
+    password: '',
   };
 
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Enter a valid email")
+      .matches(emailRegExp, "Enter a valid email")
+      .required("Required"),
+    password: Yup.string()
+      .min(4, "Minimum characters should be 8")
+      .matches(passwordRegExp, "Password must have one upper, lower case, number, and special symbol")
+      .required('Required'),
+  });
+
+
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      const response = await axiosInstance.post("/users/login", values);
+      setAccessToken(response.data.access_token);
+      document.cookie = `refreshToken=${response.data.refresh_token}; path=/; Secure; SameSite=Strict;`;
+      console.log("User logged in successfully"); 
+      // console.log(response.data)
+
+      setMessage("User logged in successfully");
+      setStatus("success");
+
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 3000)
+
+    } catch (error) {
+      if (error.response){
+        //the request was made and the server repsonded with a service code
+        console.error("Error response: ", error.response.data);
+        setMessage(error.response.data.detail);
+        setStatus("error")
+      }else if (error.request){
+        //The request was made but no response was received
+        console.error("Error request: ", error.request);
+        setMessage("No response from server")
+        setStatus("error")
+      }else {
+        //something happened in setting up the request
+        console.error("Error message: ", error.message)
+        setMessage(error.message)
+        setStatus("error")
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+   
+
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={themes[mode]}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         <Grid
           item
           xs={false}
           sm={4}
-          md={7}
+          md={6}
           sx={{
             backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
             backgroundRepeat: 'no-repeat',
@@ -46,7 +124,7 @@ export default function SignInSide() {
             backgroundPosition: 'center',
           }}
         />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid item xs={12} sm={8} md={6} component={Paper} elevation={6} square>
           <Box
             sx={{
               my: 8,
@@ -56,59 +134,81 @@ export default function SignInSide() {
               alignItems: 'center',
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main'}}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-              <Copyright sx={{ mt: 5 }} />
-            </Box>
+            {status && <StatusDisplay status={status} message={message}/>}
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+              method="POST"
+            >
+              {({ errors, touched, isSubmitting }) => (
+                <Box component={Form} noValidate>
+                  <Field
+                    as={TextField}
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    autoFocus
+                    error={touched.email && !!errors.email}
+                    helperText={touched.email && errors.email}
+                  />
+                  <Field
+                    as={TextField}
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    error={touched.password && !!errors.password}
+                    helperText={touched.password && errors.password}
+                  />
+                  <FormControlLabel
+                    control={<Checkbox value="remember" color="primary" />}
+                    label="Remember me"
+                  />
+                  {errors.submit && (
+                    <Typography color="error" variant="body2" align="center">
+                      {errors.submit}
+                    </Typography>
+                  )}
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                    disabled={isSubmitting}
+                  >
+                    Sign In
+                  </Button>
+                  <Grid container>
+                    <Grid item xs>
+                      <Link href="#" variant="body2">
+                        Forgot password?
+                      </Link>
+                    </Grid>
+                    <Grid item>
+                      <Link href="#" variant="body2">
+                        {"Don't have an account? Sign Up"}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                  <Copyright sx={{ mt: 5 }} />
+                </Box>
+              )}
+            </Formik>
           </Box>
         </Grid>
       </Grid>
