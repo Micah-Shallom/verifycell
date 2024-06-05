@@ -8,7 +8,7 @@ def phone_number_verfification():
 
 
 
-def send_otp(phone_number:str, token_length:str, expiration_time:str, api_key:str):
+def send_user_otp(phone_number:str, token_length:str, expiration_time:str, api_key:str):
     """
     Function to send OTP
     """
@@ -21,7 +21,7 @@ def send_otp(phone_number:str, token_length:str, expiration_time:str, api_key:st
         "token_type": "numeric",
         "token_length": token_length,
         "expiration_time": expiration_time,
-        "customer_mobile_number": phone_number,
+        "customer_mobile_number": "234"+phone_number[1:],
     }
     headers = {
         "accept": "application/json",
@@ -34,7 +34,7 @@ def send_otp(phone_number:str, token_length:str, expiration_time:str, api_key:st
     return response
 
 
-def verify_otp(verification_reference:str, verification_code:str, api_key:str):
+def verify_user_otp(verification_reference:str, verification_code:str, api_key:str):
     """
     Function to verify OTP
     """
@@ -44,6 +44,7 @@ def verify_otp(verification_reference:str, verification_code:str, api_key:str):
         "verification_reference": verification_reference,
         "verification_code": verification_code
     }
+    
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
