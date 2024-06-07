@@ -1,5 +1,5 @@
 import {Navigate} from 'react-router-dom';
-import { useStatusContext } from '../context';
+import { useStatusContext } from '../context/displayContext';
 
 const PrivateRoute = ({ component: Component}) => {
 

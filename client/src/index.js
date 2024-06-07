@@ -5,16 +5,19 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {RouterProvider } from 'react-router-dom';
 import Router from './router';
-import { StatusProvider } from './context';
+import { StatusProvider } from './context/displayContext';
+import { AuthProvider } from './context/authContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <StatusProvider>
-      <RouterProvider router={Router}>
-        <App />
-      </RouterProvider>
-    </StatusProvider>
+    <AuthProvider>
+      <StatusProvider>
+        <RouterProvider router={Router}>
+          <App />
+        </RouterProvider>
+      </StatusProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

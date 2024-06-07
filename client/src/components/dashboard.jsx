@@ -1,9 +1,16 @@
 import { removeAccessToken } from "../tokenStorage";
 import { useNavigate } from "react-router-dom";
-import { Button, Avatar, Box, Typography, Card, CardContent, AppBar, Toolbar, CssBaseline, Container, Grid } from '@mui/material';
+import { Button, Avatar, Box, Typography, Card, CardContent, AppBar, Toolbar, CssBaseline, Container, Grid, ThemeProvider } from '@mui/material';
 import { Logout, Delete, CalendarToday } from '@mui/icons-material';
+import { themes, useThemeMode } from '../theme';
+import { useStatusContext } from '../context/displayContext';
+
 
 export default function DashBoard() {
+    const {mode} = useThemeMode(localStorage.getItem('themeMode') || 'light');
+
+    // const {user} = useStatusContext();
+
     const navigate = useNavigate();  
 
     const handleLogout = async () => {
@@ -12,7 +19,16 @@ export default function DashBoard() {
         navigate('/');
     };
 
+    const user = {
+        firstname: 'John',
+        lastname: 'Doe',
+        username: 'johndoe',
+        email: 'micahshallom',
+        phone: '123-456-7890',
+    }
+
   return (
+    <ThemeProvider theme={themes[mode]}>
     <Box style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <CssBaseline />
       <AppBar position="static" style={{ backgroundColor: '#333' }}>
@@ -33,10 +49,10 @@ export default function DashBoard() {
                 <Avatar alt="User Avatar" src="/placeholder.svg" sx={{ width: 64, height: 64, marginRight: '1rem' }} />
                 <Box>
                   <Typography variant="h6" component="div">
-                    John Doe
+                    {user.firstname} {user.lastname}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    @johndoe
+                    @{user.username}
                   </Typography>
                   <Box display="flex" alignItems="center" color="textSecondary" fontSize="small">
                     <CalendarToday fontSize="small" />
@@ -52,7 +68,7 @@ export default function DashBoard() {
                     First Name
                   </Typography>
                   <Typography variant="body1">
-                    John
+                    {user.firstname}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -60,7 +76,7 @@ export default function DashBoard() {
                     Last Name
                   </Typography>
                   <Typography variant="body1">
-                    Doe
+                    {user.lastname}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -68,7 +84,7 @@ export default function DashBoard() {
                     Username
                   </Typography>
                   <Typography variant="body1">
-                    johndoe
+                    {user.username}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -76,7 +92,7 @@ export default function DashBoard() {
                     Email
                   </Typography>
                   <Typography variant="body1">
-                    john.doe@example.com
+                    {user.email}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -84,7 +100,7 @@ export default function DashBoard() {
                     Phone
                   </Typography>
                   <Typography variant="body1">
-                    +1 (555) 555-5555
+                    {user.phone}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -122,5 +138,6 @@ export default function DashBoard() {
         </Container>
       </Box>
     </Box>
+    </ThemeProvider>
   );
 }

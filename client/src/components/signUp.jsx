@@ -15,7 +15,7 @@ import axios from 'axios';
 import * as Yup from 'yup';
 import { Formik, Field, ErrorMessage, Form } from 'formik';
 import StatusDisplay from './statusDisplay';
-import { useStatusContext } from '../context';
+import { useStatusContext } from '../context/displayContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {

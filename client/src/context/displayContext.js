@@ -11,6 +11,7 @@ export const StatusProvider = ({children}) => {
     //this should be in a different context file
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [verificationRef, setVerificationRef] = useState(null);
+    const [user, setUser] = useState(null);
 
     const value = {
         message,
@@ -20,7 +21,9 @@ export const StatusProvider = ({children}) => {
         isAuthenticated,
         setIsAuthenticated,
         verificationRef,
-        setVerificationRef
+        setVerificationRef,
+        user,
+        setUser,
     }
 
     return <StatusContext.Provider value={value}>{children}</StatusContext.Provider>

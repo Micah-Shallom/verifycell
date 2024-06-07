@@ -20,8 +20,8 @@ export default function HomePage() {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button color="inherit"  onClick={toggleThemeMode}><DarkModeRounded/></Button>
-            <Button color="inherit" component={RouterLink} to="#">About</Button>
-            <Button color="inherit" component={RouterLink} to="#">Contact</Button>
+            <Button color="inherit" component={RouterLink} to="https://github.com/Micah-Shallom/verifycell">About</Button>
+            <Button color="inherit" component={RouterLink} to="https://www.linkedin.com/in/micah-shallom/">Contact</Button>
           </Box>
         </Toolbar>
       </AppBar>
@@ -44,7 +44,10 @@ export default function HomePage() {
             </Box>
           </Container>
         </Box>
-        <Box sx={{ width: '100%', padding: '3rem 0', backgroundColor: "#f0f0f0" , textAlign: 'center' }}>
+        <Box sx={{ width: '100%', padding: '3rem 0', 
+        backgroundColor: (t) =>
+          t.palette.mode === 'light' ? t.palette.primary.grey : t.palette.primary.main,
+        textAlign: 'center' }}>
           <Container>
             <Typography variant="h3" component="h2" gutterBottom>
               Features

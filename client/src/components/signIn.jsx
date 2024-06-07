@@ -12,31 +12,33 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { ThemeProvider } from '@mui/material/styles';
-import { defaultTheme, themes, useThemeMode } from '../theme';
+import { themes, useThemeMode } from '../theme';
 import Copyright from './copyright';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field }  from 'formik';
 import * as Yup from 'yup';
 import { setAccessToken } from '../tokenStorage';
-import { useStatusContext } from '../context';
+import { useStatusContext } from '../context/displayContext';
+import { useAuthContext } from '../context/authContext';
 import StatusDisplay from './statusDisplay';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
 import { useEffect } from 'react';
 import { getAccessToken } from '../tokenStorage';
 
-export default function SignInSide() {
 
-  const {message, setMessage, status, setStatus, isAuthenticated, setIsAuthenticated} = useStatusContext()
+export default function SignInSide() {
+  const {isAuthenticated, login} = useAuthContext();
+
+  const {message, setMessage, status, setStatus} = useStatusContext()
   const navigate = useNavigate();
   const {mode} = useThemeMode(localStorage.getItem('themeMode') || 'light');
 
-  useEffect(() => {
-    const token = getAccessToken();
-    console.log(token)
-    if (token){
-      setIsAuthenticated(true);
-    }
-  });
+  // useEffect(() => {
+  //   const token = getAccessToken();
+  //   if (token){
+  //     setIsAuthenticated(!!token);
+  //   }
+  // });
 
   useEffect(() => {
     if (isAuthenticated){
@@ -70,13 +72,17 @@ export default function SignInSide() {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       const response = await axiosInstance.post("/users/login", values);
-      setAccessToken(response.data.access_token);
-      document.cookie = `refreshToken=${response.data.refresh_token}; path=/; Secure; SameSite=Strict;`;
+      const {access_token, refresh_token, user} = response.data
+
+      //login the user
+      login(access_token, user)
+
+      document.cookie = `refreshToken=${refresh_token}; path=/; Secure; SameSite=Strict;`;
       console.log("User logged in successfully"); 
-      // console.log(response.data)
 
       setMessage("User logged in successfully");
       setStatus("success");
+    
 
       setTimeout(() => {
         navigate('/dashboard');
