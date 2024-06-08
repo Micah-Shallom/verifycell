@@ -1,9 +1,7 @@
-Certainly! Here's the revised README mentioning the use of Sendchamp API for OTP and specifying the application name "VerifyCell":
-
 ---
 
 # VerifyCell 
-# FastAPI User Management API
+### FastAPI User Management API
 
 ## Project Overview
 
