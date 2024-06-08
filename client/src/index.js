@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {RouterProvider } from 'react-router-dom';
-import Router from './router';
+import Router from './utils/router';
 import { StatusProvider } from './context/displayContext';
 import { AuthProvider } from './context/authContext';
 

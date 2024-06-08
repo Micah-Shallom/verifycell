@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { setAccessToken, getAccessToken, removeAccessToken } from '../tokenStorage';
+import { setAccessToken, getAccessToken, removeAccessToken } from '../utils/tokenStorage';
 
 export const AuthContext = createContext();
 export const useAuthContext = () => useContext(AuthContext);
@@ -9,11 +8,13 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get('accessToken'));
     const [user, setUser] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const accessToken = getAccessToken();
         setIsAuthenticated(!!accessToken);
+        console.log(accessToken)
+        // login(accessToken, null)
+
         // Fetch user info from accessToken if needed
     }, []);
 
@@ -27,7 +28,6 @@ export const AuthProvider = ({ children }) => {
         removeAccessToken();
         setIsAuthenticated(false);
         setUser(null);
-        navigate('/');
     };
 
     const values = {

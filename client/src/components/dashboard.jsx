@@ -1,31 +1,41 @@
-import { removeAccessToken } from "../tokenStorage";
 import { useNavigate } from "react-router-dom";
 import { Button, Avatar, Box, Typography, Card, CardContent, AppBar, Toolbar, CssBaseline, Container, Grid, ThemeProvider } from '@mui/material';
 import { Logout, Delete, CalendarToday } from '@mui/icons-material';
 import { themes, useThemeMode } from '../theme';
-import { useStatusContext } from '../context/displayContext';
+import { useAuthContext } from '../context/authContext';
+import { useEffect } from "react";
+
 
 
 export default function DashBoard() {
     const {mode} = useThemeMode(localStorage.getItem('themeMode') || 'light');
+    const {logout , user, isAuthenticated} = useAuthContext();
+    const navigate = useNavigate();
 
-    // const {user} = useStatusContext();
-
-    const navigate = useNavigate();  
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate("/login");
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleLogout = async () => {
-        console.log("Logout");
-        await removeAccessToken();
-        navigate('/');
+        logout();
+        navigate("/");
     };
 
-    const user = {
-        firstname: 'John',
-        lastname: 'Doe',
-        username: 'johndoe',
-        email: 'micahshallom',
-        phone: '123-456-7890',
-    }
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
+
+    // const user = {
+    //     firstname: 'John',
+    //     lastname: 'Doe',
+    //     username: 'johndoe',
+    //     email: 'micahshallom',
+    //     phone: '123-456-7890',
+    // }
 
   return (
     <ThemeProvider theme={themes[mode]}>

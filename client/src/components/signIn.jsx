@@ -16,33 +16,28 @@ import { themes, useThemeMode } from '../theme';
 import Copyright from './copyright';
 import { Formik, Form, Field }  from 'formik';
 import * as Yup from 'yup';
-import { setAccessToken } from '../tokenStorage';
 import { useStatusContext } from '../context/displayContext';
 import { useAuthContext } from '../context/authContext';
 import StatusDisplay from './statusDisplay';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
 import { useEffect } from 'react';
-import { getAccessToken } from '../tokenStorage';
 
 
-export default function SignInSide() {
+export default function SignIn() {
   const {isAuthenticated, login} = useAuthContext();
 
   const {message, setMessage, status, setStatus} = useStatusContext()
   const navigate = useNavigate();
   const {mode} = useThemeMode(localStorage.getItem('themeMode') || 'light');
 
-  // useEffect(() => {
-  //   const token = getAccessToken();
-  //   if (token){
-  //     setIsAuthenticated(!!token);
-  //   }
-  // });
+  
 
   useEffect(() => {
     if (isAuthenticated){
-      navigate('/dashboard');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 3000)
     }
   }, [isAuthenticated, navigate]); 
   
@@ -83,7 +78,7 @@ export default function SignInSide() {
       setMessage("User logged in successfully");
       setStatus("success");
     
-
+      console.log(isAuthenticated)
       setTimeout(() => {
         navigate('/dashboard');
       }, 3000)

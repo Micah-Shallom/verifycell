@@ -1,9 +1,9 @@
 import {Navigate} from 'react-router-dom';
-import { useStatusContext } from '../context/displayContext';
+import { useAuthContext } from '../context/authContext';
 
 const PrivateRoute = ({ component: Component}) => {
 
-    const {isAuthenticated} = useStatusContext();
+    const {isAuthenticated} = useAuthContext();
 
     return (
         isAuthenticated ? <Component/> : <Navigate to="/login" />
