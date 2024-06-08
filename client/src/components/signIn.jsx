@@ -23,34 +23,32 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
 import { useEffect } from 'react';
 
-
 export default function SignIn() {
-  const {isAuthenticated, login} = useAuthContext();
-
-  const {message, setMessage, status, setStatus} = useStatusContext()
+  // Retrieve necessary data from custom hooks
+  const { user, isAuthenticated, login } = useAuthContext();
+  const { message, setMessage, status, setStatus } = useStatusContext();
   const navigate = useNavigate();
-  const {mode} = useThemeMode(localStorage.getItem('themeMode') || 'light');
+  const { mode } = useThemeMode(localStorage.getItem('themeMode') || 'light');
 
-  
-
+  // Effect to redirect to dashboard if authenticated
   useEffect(() => {
-    if (isAuthenticated){
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 3000)
+    if (isAuthenticated) {
+      console.log(user);
+      navigate(`/dashboard/${user.username}`, { replace: true });
     }
-  }, [isAuthenticated, navigate]); 
-  
+  }, [isAuthenticated, user, navigate]);
 
-
+  // Regular expressions for email and password validation
   const emailRegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   const passwordRegExp = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
+  // Initial values for form fields
   const initialValues = {
     email: '',
     password: '',
   };
 
+  // Form validation schema using Yup
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Enter a valid email")
@@ -62,55 +60,49 @@ export default function SignIn() {
       .required('Required'),
   });
 
-
-
+  // Handle form submission
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
+      // Send login request to server
       const response = await axiosInstance.post("/users/login", values);
-      const {access_token, refresh_token, user} = response.data
+      const { access_token, refresh_token, user } = response.data;
 
-      //login the user
-      login(access_token, user)
-
+      // Login the user and set tokens
+      login(access_token, user);
       document.cookie = `refreshToken=${refresh_token}; path=/; Secure; SameSite=Strict;`;
-      console.log("User logged in successfully"); 
 
+      // Set success message and redirect to dashboard
       setMessage("User logged in successfully");
       setStatus("success");
-    
-      console.log(isAuthenticated)
       setTimeout(() => {
-        navigate('/dashboard');
-      }, 3000)
+        navigate(`/dashboard/${user.username}`, { replace: true });
+      }, 3000);
 
     } catch (error) {
-      if (error.response){
-        //the request was made and the server repsonded with a service code
+      // Handle different types of errors
+      if (error.response) {
         console.error("Error response: ", error.response.data);
         setMessage(error.response.data.detail);
-        setStatus("error")
-      }else if (error.request){
-        //The request was made but no response was received
+        setStatus("error");
+      } else if (error.request) {
         console.error("Error request: ", error.request);
-        setMessage("No response from server")
-        setStatus("error")
-      }else {
-        //something happened in setting up the request
-        console.error("Error message: ", error.message)
-        setMessage(error.message)
-        setStatus("error")
+        setMessage("No response from server");
+        setStatus("error");
+      } else {
+        console.error("Error message: ", error.message);
+        setMessage(error.message);
+        setStatus("error");
       }
     } finally {
       setSubmitting(false);
     }
   };
 
-   
-
   return (
     <ThemeProvider theme={themes[mode]}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
+        {/* Background image */}
         <Grid
           item
           xs={false}
@@ -125,6 +117,7 @@ export default function SignIn() {
             backgroundPosition: 'center',
           }}
         />
+        {/* Sign-in form container */}
         <Grid item xs={12} sm={8} md={6} component={Paper} elevation={6} square>
           <Box
             sx={{
@@ -135,13 +128,16 @@ export default function SignIn() {
               alignItems: 'center',
             }}
           >
+            {/* Sign-in icon */}
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main'}}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
+            {/* Display status messages */}
             {status && <StatusDisplay status={status} message={message}/>}
+            {/* Formik form for sign-in */}
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
@@ -150,6 +146,7 @@ export default function SignIn() {
             >
               {({ errors, touched, isSubmitting }) => (
                 <Box component={Form} noValidate>
+                  {/* Email input field */}
                   <Field
                     as={TextField}
                     margin="normal"
@@ -163,6 +160,7 @@ export default function SignIn() {
                     error={touched.email && !!errors.email}
                     helperText={touched.email && errors.email}
                   />
+                  {/* Password input field */}
                   <Field
                     as={TextField}
                     margin="normal"
@@ -176,15 +174,18 @@ export default function SignIn() {
                     error={touched.password && !!errors.password}
                     helperText={touched.password && errors.password}
                   />
+                  {/* Remember me checkbox */}
                   <FormControlLabel
                     control={<Checkbox value="remember" color="primary" />}
                     label="Remember me"
                   />
+                  {/* Submit error message */}
                   {errors.submit && (
                     <Typography color="error" variant="body2" align="center">
                       {errors.submit}
                     </Typography>
                   )}
+                  {/* Sign-in button */}
                   <Button
                     type="submit"
                     fullWidth
@@ -194,6 +195,7 @@ export default function SignIn() {
                   >
                     Sign In
                   </Button>
+                  {/* Forgot password and sign-up links */}
                   <Grid container>
                     <Grid item xs>
                       <Link href="#" variant="body2">
@@ -206,6 +208,7 @@ export default function SignIn() {
                       </Link>
                     </Grid>
                   </Grid>
+                  {/* Copyright information */}
                   <Copyright sx={{ mt: 5 }} />
                 </Box>
               )}
