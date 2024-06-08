@@ -4,12 +4,9 @@ from app.src.utils.uuid import generate_uuid as uuid
 from sqlalchemy.orm import Session
 from app.src.config.database import Base
 
-
 class BaseInfoModel():
-
     """
-        This class defines all common attributes/methods
-        for other class that would inherit it.
+    Base class for SQLAlchemy models with common attributes and methods.
     """
     
     id = Column(String(200), unique=True, nullable=False, primary_key=True, default=lambda: uuid())
@@ -17,67 +14,35 @@ class BaseInfoModel():
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: (datetime.now(timezone.utc)))
 
     def __init__(self, *args, **kwargs):
-        """
-            Initialization of base model class
-
-            Args:
-                args: Not used
-                Kwargs: constructor for the basemodel
-
-            Attributes:
-                id: unique id generated
-                created_at: creation date
-                updated_at: updated date
-        """
-
-        # check if parameters were passed while inheriting
-        # and assign the to the base class
+        """Initialization of base model class."""
+        pass
 
     def __str__(self):
-        """
-            This instance defines the property of the class in a string fmt
-            Return:
-                returns a string containing of class name, id and dict
-        """
+        """String representation of the class."""
         return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
 
     def __repr__(self):
-        """
-            Return:
-                returns a string representation of the calss
-
-        """
+        """Representation of the class."""
         return self.__str__()
-    
+
     def to_dict(self):
-        """
-            This instance creates a dictionary representation of the classs
-
-            Return:
-                returns a dict rep of the class containing the
-        """
-
+        """Dictionary representation of the class."""
         base_dict = dict(self.__dict__)
         base_dict['__class__'] = str(type(self).__name__)
         base_dict['created_at'] = self.created_at.isoformat()
         base_dict['updated_at'] = self.updated_at.isoformat()
-
         return base_dict
     
     def before_save(self, db: Session, *args, **kwargs):
+        """Hook method called before saving."""
         pass
 
-    def after_save(self, db:Session, *args, **kwargs):
+    def after_save(self, db: Session, *args, **kwargs):
+        """Hook method called after saving."""
         db.refresh(self)
 
-    def save(self,db: Session, commit=True):
-        """
-            This instance saves the current attributes in the class
-            and updates the updated_at attribute
-
-            Return:
-                None
-        """
+    def save(self, db: Session, commit=True):
+        """Save method to save the current instance."""
         self.before_save(db)
 
         db.add(self)
@@ -91,20 +56,24 @@ class BaseInfoModel():
             
         self.after_save(db)
 
-    def before_update(self,db: Session, *args, **kwargs):
+    def before_update(self, db: Session, *args, **kwargs):
+        """Hook method called before updating."""
         pass
 
-    def after_update(self,db: Session, *args, **kwargs):
+    def after_update(self, db: Session, *args, **kwargs):
+        """Hook method called after updating."""
         db.refresh(self)
 
-    def update(self,db: Session, *args, **kwargs):
-        self.before_update(db,*args, **kwargs)
+    def update(self, db: Session, *args, **kwargs):
+        """Update method to update the current instance."""
+        self.before_update(db, *args, **kwargs)
 
         db.commit()
 
         self.after_update(db, *args, **kwargs)
 
-    def delete(self,db: Session, commit=True):
+    def delete(self, db: Session, commit=True):
+        """Delete method to delete the current instance."""
         self.before_update(db)
 
         db.delete(self)

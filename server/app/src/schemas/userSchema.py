@@ -24,6 +24,13 @@ class LoginUser(BaseModel):
         orm_mode=True
         use_enum_values = True
 
+class User(BaseModel):
+    firstname: str
+    lastname: str
+    username: str
+    email: EmailStr
+    phone_number: str
+
 
 class GetUser(BaseModel):
     username:str
@@ -38,9 +45,15 @@ class GetLogin(BaseModel):
     access_token:str
     refresh_token:str
     token_type:str
-    user_id:str
+    user: User
 
     class Config:
         orm_mode=True
         use_enum_values = True
 
+class GetUserProfile(BaseModel):
+    user: User
+
+    class Config:
+        orm_mode=True
+        use_enum_values = True  
